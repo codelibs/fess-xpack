@@ -5,6 +5,10 @@ X-Pack Support for Fess
 
 X-Pack support for Fess is an extension library to work with Elasticsearch and X-Pack environment.
 
+## Download
+
+See [Maven Repository](http://central.maven.org/maven2/org/codelibs/fess/fess-xpack/).
+
 ## Setup
 
 ### Install Elasticsearch with X-Pack
