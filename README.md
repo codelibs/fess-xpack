@@ -108,6 +108,29 @@ xpack.security.user=fess:changeme
 
 For other available settings, see [Java Client and Security](https://www.elastic.co/guide/en/x-pack/current/java-clients.html).
 
+### SSL Support
+
+To add SSL transport settings, edit esclient.xml:
+
+```
+	<component name="fessEsClient" class="org.codelibs.fess.es.client.FessEsClient">
+		<property name="settings">
+			{"http.cors.enabled":"true",
+			 "http.cors.allow-origin":"*",
+			 "searchguard.ssl.transport.pemkey_filepath":"/path/to/the/key",
+			 "searchguard.ssl.transport.pemcert_filepath":"/path/to/the/CERTIFICATE",
+			 "searchguard.ssl.transport.pemtrustedcas_filepath":"/path/to/the/CA"
+			 }
+		</property>
+```
+
+and enable the following settings in fess.in.[sh|bat] to add SSL truststore for certificate validation:
+
+```
+JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tech/elastic/config/truststore.jks"
+JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=changeit"
+```
+
 ### Start Fess and Elasticsearch
 
 ```
