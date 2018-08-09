@@ -5,7 +5,7 @@
 	<artifactId>fess-xpack</artifactId>
 	<packaging>jar</packaging>
 	<name>X-Pack support for Fess</name>
-	<version>12.1.4.0-SNAPSHOT</version>
+	<version>12.1.5.0-SNAPSHOT</version>
 	<url>http://fess.codelibs.org/</url>
 	<inceptionYear>2009</inceptionYear>
 	<licenses>
@@ -37,7 +37,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<fess.version>12.1.4</fess.version>
+		<fess.version>12.1.5</fess.version>
 
 		<!-- Main Framework -->
 		<dbflute.version>1.1.6</dbflute.version>
@@ -61,10 +61,10 @@
 		<utflute.version>0.8.5</utflute.version>
 
 		<!-- Crawler -->
-		<crawler.version>2.1.1</crawler.version>
+		<crawler.version>2.1.3</crawler.version>
 
 		<!-- Suggest -->
-		<suggest.version>6.2.1</suggest.version>
+		<suggest.version>6.2.2</suggest.version>
 
 		<!-- Elasticsearch -->
 		<elasticsearch.version>6.2.4</elasticsearch.version>
