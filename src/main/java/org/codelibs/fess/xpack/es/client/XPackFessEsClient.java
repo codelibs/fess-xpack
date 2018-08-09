@@ -15,6 +15,8 @@
  */
 package org.codelibs.fess.xpack.es.client;
 
+import java.util.List;
+
 import org.codelibs.fess.es.client.FessEsClient;
 import org.codelibs.fess.mylasta.direction.FessConfig;
 import org.codelibs.fess.xpack.util.XPackUtil;
@@ -32,7 +34,7 @@ public class XPackFessEsClient extends FessEsClient {
     private static final Logger logger = LoggerFactory.getLogger(XPackFessEsClient.class);
 
     @Override
-    protected Client createTransportClient(final FessConfig fessConfig) {
+    protected Client createTransportClient(final FessConfig fessConfig, final List<TransportAddress> transportAddressList) {
         final Builder settingsBuilder = Settings.builder();
         settingsBuilder.put("cluster.name", fessConfig.getElasticsearchClusterName());
         settingsBuilder.put("client.transport.sniff", fessConfig.isElasticsearchTransportSniff());

@@ -19,8 +19,8 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.PostConstruct;
 
-import org.codelibs.elasticsearch.runner.net.Curl.Method;
-import org.codelibs.elasticsearch.runner.net.CurlRequest;
+import org.codelibs.curl.Curl.Method;
+import org.codelibs.curl.CurlRequest;
 import org.codelibs.fess.helper.CurlHelper;
 import org.codelibs.fess.util.ResourceUtil;
 import org.codelibs.fess.xpack.util.XPackUtil;
