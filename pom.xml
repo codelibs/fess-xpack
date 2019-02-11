@@ -5,7 +5,7 @@
 	<artifactId>fess-xpack</artifactId>
 	<packaging>jar</packaging>
 	<name>X-Pack support for Fess</name>
-	<version>12.4.3.1-SNAPSHOT</version>
+	<version>12.5.0.0-SNAPSHOT</version>
 	<url>http://fess.codelibs.org/</url>
 	<inceptionYear>2009</inceptionYear>
 	<licenses>
@@ -37,7 +37,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<fess.version>12.4.3</fess.version>
+		<fess.version>12.5.0</fess.version>
 
 		<!-- Main Framework -->
 		<dbflute.version>1.1.8</dbflute.version>
@@ -48,7 +48,7 @@
 
 		<!-- Partner Library -->
 		<slf4j.version>1.7.25</slf4j.version>
-		<log4j.version>2.9.1</log4j.version>
+		<log4j.version>2.11.1</log4j.version>
 		<jackson.version>2.8.11</jackson.version>
 		<commons.fileupload.version>1.3.3</commons.fileupload.version>
 		<asm.version>5.1</asm.version>
@@ -61,19 +61,18 @@
 		<utflute.version>0.8.6</utflute.version>
 
 		<!-- Crawler -->
-		<crawler.version>2.4.4</crawler.version>
+		<crawler.version>2.5.0</crawler.version>
 
 		<!-- Suggest -->
-		<suggest.version>6.5.2</suggest.version>
+		<suggest.version>6.6.0</suggest.version>
 
 		<!-- Elasticsearch -->
-		<elasticsearch.version>6.5.4</elasticsearch.version>
-		<elasticsearch.min.version>6.3.0</elasticsearch.min.version>
+		<elasticsearch.version>6.6.0</elasticsearch.version>
 		<cluster.runner.version>${elasticsearch.version}.0</cluster.runner.version>
 
 		<!-- Tomcat -->
-		<tomcat.version>9.0.13</tomcat.version>
-		<tomcat.boot.version>0.7.0</tomcat.boot.version>
+		<tomcat.version>9.0.14</tomcat.version>
+		<tomcat.boot.version>0.7.1</tomcat.boot.version>
 
 	</properties>
 	<build>
