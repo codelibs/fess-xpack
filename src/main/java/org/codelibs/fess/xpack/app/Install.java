@@ -24,7 +24,7 @@ import java.nio.channels.ReadableByteChannel;
 
 public class Install {
 
-    private static final String ES_VERSION = "6.2.2";
+    private static final String ES_VERSION = "6.7.2";
 
     public static void main(final String[] args) {
         final File currentDir;
@@ -42,11 +42,10 @@ public class Install {
 
         final String esVersion = System.getProperty("elasticsearch.version", ES_VERSION);
         try {
-            download("http://central.maven.org/maven2/com/vividsolutions/jts/1.13/jts-1.13.jar", new File(currentDir, "jts-1.13.jar"));
-            download("http://central.maven.org/maven2/com/unboundid/unboundid-ldapsdk/3.2.0/unboundid-ldapsdk-3.2.0.jar",
-                    new File(currentDir, "unboundid-ldapsdk-3.2.0.jar"));
-            download("https://artifacts.elastic.co/maven/org/elasticsearch/plugin/x-pack-api/" + esVersion + "/x-pack-api-" + esVersion
-                    + ".jar", new File(currentDir, "x-pack-api-" + esVersion + ".jar"));
+            download("http://central.maven.org/maven2/com/unboundid/unboundid-ldapsdk/4.0.8/unboundid-ldapsdk-4.0.8.jar",
+                    new File(currentDir, "unboundid-ldapsdk-4.0.8.jar"));
+            download("https://artifacts.elastic.co/maven/org/elasticsearch/plugin/x-pack-core/" + esVersion + "/x-pack-core-" + esVersion
+                    + ".jar", new File(currentDir, "x-pack-core-" + esVersion + ".jar"));
             download("https://artifacts.elastic.co/maven/org/elasticsearch/client/x-pack-transport/" + esVersion + "/x-pack-transport-"
                     + esVersion + ".jar", new File(currentDir, "x-pack-transport-" + esVersion + ".jar"));
         } catch (final IOException e) {
