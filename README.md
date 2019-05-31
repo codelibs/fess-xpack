@@ -15,23 +15,144 @@ See [Maven Repository](http://central.maven.org/maven2/org/codelibs/fess/fess-xp
 
 See [Set up Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html) and [Installing X-Pack](https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html).
 
-For example, you can create users for X-Pack by executing `setup-passwords` command:
+For example, you can create users for X-Pack by executing `elasticsearch-setup-passwords` command:
 
 ```
-# /usr/share/elasticsearch/bin/x-pack/setup-passwords auto
-Initiating the setup of passwords for reserved users elastic,kibana,logstash_system.
-The passwords will be randomly generated and printed to the console.
+# /usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive
+Initiating the setup of passwords for reserved users elastic,apm_system,kibana,logstash_system,beats_system,remote_monitoring_user.
+You will be prompted to enter passwords as the process progresses.
 Please confirm that you would like to continue [y/N]y
 
 
-Changed password for user kibana
-PASSWORD kibana = ...password...
+Enter password for [elastic]:
+Reenter password for [elastic]:
+Enter password for [apm_system]:
+Reenter password for [apm_system]:
+Enter password for [kibana]:
+Reenter password for [kibana]:
+Enter password for [logstash_system]:
+Reenter password for [logstash_system]:
+Enter password for [beats_system]:
+Reenter password for [beats_system]:
+Enter password for [remote_monitoring_user]:
+Reenter password for [remote_monitoring_user]:
+Changed password for user [apm_system]
+Changed password for user [kibana]
+Changed password for user [logstash_system]
+Changed password for user [beats_system]
+Changed password for user [remote_monitoring_user]
+Changed password for user [elastic]
+```
 
-Changed password for user logstash_system
-PASSWORD logstash_system = ...password...
+### Generate Node Certificates
 
-Changed password for user elastic
-PASSWORD elastic = ...password...
+See [Encrypting communications in Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/6.4/configuring-tls.html).
+
+Using `elasticsearch-certutil`, 1) generate a new local certificate authority.
+
+```
+# /usr/share/elasticsearch/bin/elasticsearch-certutil ca
+This tool assists you in the generation of X.509 certificates and certificate
+signing requests for use with SSL/TLS in the Elastic stack.
+
+The 'ca' mode generates a new 'certificate authority'
+This will create a new X.509 certificate and private key that can be used
+to sign certificate when running in 'cert' mode.
+
+Use the 'ca-dn' option if you wish to configure the 'distinguished name'
+of the certificate authority
+
+By default the 'ca' mode produces a single PKCS#12 output file which holds:
+    * The CA certificate
+    * The CA's private key
+
+If you elect to generate PEM format certificates (the -pem option), then the output will
+be a zip file containing individual files for the CA certificate and private key
+
+Please enter the desired output file [elastic-stack-ca.p12]:
+Enter password for elastic-stack-ca.p12 :
+```
+
+2) generate X.509 certificates and keys.
+
+```
+# /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca elastic-stack-ca.p12
+warning: Falling back to java on path. This behavior is deprecated. Specify JAVA_HOME
+This tool assists you in the generation of X.509 certificates and certificate
+signing requests for use with SSL/TLS in the Elastic stack.
+
+The 'cert' mode generates X.509 certificate and private keys.
+    * By default, this generates a single certificate and key for use
+       on a single instance.
+    * The '-multiple' option will prompt you to enter details for multiple
+       instances and will generate a certificate and key for each one
+    * The '-in' option allows for the certificate generation to be automated by describing
+       the details of each instance in a YAML file
+
+    * An instance is any piece of the Elastic Stack that requires a SSL certificate.
+      Depending on your configuration, Elasticsearch, Logstash, Kibana, and Beats
+      may all require a certificate and private key.
+    * The minimum required value for each instance is a name. This can simply be the
+      hostname, which will be used as the Common Name of the certificate. A full
+      distinguished name may also be used.
+    * A filename value may be required for each instance. This is necessary when the
+      name would result in an invalid file or directory name. The name provided here
+      is used as the directory name (within the zip) and the prefix for the key and
+      certificate files. The filename is required if you are prompted and the name
+      is not displayed in the prompt.
+    * IP addresses and DNS names are optional. Multiple values can be specified as a
+      comma separated string. If no IP addresses or DNS names are provided, you may
+      disable hostname verification in your SSL configuration.
+
+    * All certificates generated by this tool will be signed by a certificate authority (CA).
+    * The tool can automatically generate a new CA for you, or you can provide your own with the
+         -ca or -ca-cert command line options.
+
+By default the 'cert' mode produces a single PKCS#12 output file which holds:
+    * The instance certificate
+    * The private key for the instance certificate
+    * The CA certificate
+
+If you specify any of the following options:
+    * -pem (PEM formatted output)
+    * -keep-ca-key (retain generated CA key)
+    * -multiple (generate multiple certificates)
+    * -in (generate certificates from an input file)
+then the output will be be a zip file containing individual certificate/key files
+
+Enter password for CA (elastic-stack-ca.p12) :
+Please enter the desired output file [elastic-certificates.p12]:
+Enter password for elastic-certificates.p12 :
+
+Certificates written to /home/vagrant/elastic-certificates.p12
+
+This file should be properly secured as it contains the private key for
+your instance.
+
+This file is a self contained file and can be copied and used 'as is'
+For each Elastic product that you wish to configure, you should copy
+this '.p12' file to the relevant configuration directory
+and then follow the SSL configuration instructions in the product guide.
+
+For client applications, you may only need to copy the CA certificate and
+configure the client to trust this certificate.
+```
+
+3) copy the generated files to /etc/elasticsearch.
+
+```
+# cp elastic-certificates.p12 elastic-stack-ca.p12 /etc/elasticsearch/
+# chgrp elasticsearch /etc/elasticsearch/elastic-certificates.p12 /etc/elasticsearch/elastic-stack-ca.p12
+# chmod 640 /etc/elasticsearch/elastic-certificates.p12 /etc/elasticsearch/elastic-stack-ca.p12
+```
+
+4) store passwords for ca and cert to key stores.
+
+```
+# /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.transport.ssl.keystore.secure_password
+Enter value for xpack.security.transport.ssl.keystore.secure_password:
+# /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.transport.ssl.truststore.secure_password
+Enter value for xpack.security.transport.ssl.truststore.secure_password:
 ```
 
 ### Create User and Role for Fess
@@ -69,66 +190,50 @@ Stop Elasticsearch process.
 
 ### Edit elasticsearch.yml
 
-Insert the following setting into /etc/elasticsearch/elasticsearch.yml.
+Insert the following setting into `/etc/elasticsearch/elasticsearch.yml`.
 
 ```
 configsync.xpack.security.user: "fess:changeme"
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: /etc/elasticsearch/elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: /etc/elasticsearch/elastic-certificates.p12
 ```
 
 ### Install Fess
 
-See [Installation Guide](https://fess.codelibs.org/12.1/install/index.html).
+See [Installation Guide](https://fess.codelibs.org/12.6/install/index.html).
 X-Pack support for Fess is avaiable on Fess 12.1.1 or above.
 
 ### Install X-Pack Support
 
-Copy fess-xpack-12.1.X.X.jar to `lib` directory(ex. /usr/share/fess/app/WEB-INF/lib) and run jar file to download dependencies as below:
+Copy fess-xpack-12.X.X.X.jar to `lib` directory(ex. /usr/share/fess/app/WEB-INF/lib) and run jar file to download dependencies as below:
 
 ```
 # cd /usr/share/fess/app/WEB-INF/lib
-# java -Delasticsearch.version=6.2.2 -jar fess-xpack-12.1.X.X.jar
-Downloading from http://central.maven.org/maven2/com/vividsolutions/jts/1.13/jts-1.13.jar
-Saved /Users/shinsuke/workspace/fess-xpack/jts-1.13.jar
-Downloading from http://central.maven.org/maven2/com/unboundid/unboundid-ldapsdk/3.2.0/unboundid-ldapsdk-3.2.0.jar
-Saved /Users/shinsuke/workspace/fess-xpack/unboundid-ldapsdk-3.2.0.jar
-Downloading from https://artifacts.elastic.co/maven/org/elasticsearch/plugin/x-pack-api/6.2.2/x-pack-api-6.2.2.jar
-Saved /Users/shinsuke/workspace/fess-xpack/x-pack-api-6.2.2.jar
-Downloading from https://artifacts.elastic.co/maven/org/elasticsearch/client/x-pack-transport/6.2.2/x-pack-transport-6.2.2.jar
-Saved /Users/shinsuke/workspace/fess-xpack/x-pack-transport-6.2.2.jar
-Successful!
+# java -Delasticsearch.version=6.7.2 -jar fess-xpack-12.X.X.X.jar
 ```
 
 ### Create xpack.properties
 
-Create xpack.properties in `conf` directory(ex. /etc/fess) and put X-Pack settings to the properties file.
+Create `xpack.properties` in `conf` directory(ex. /etc/fess) and put X-Pack settings to the properties file.
 
 ```
 xpack.security.user=fess:changeme
+xpack.security.transport.ssl.enabled=true
+xpack.security.transport.ssl.verification_mode=certificate
+xpack.security.transport.ssl.keystore.path=/etc/fess/elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path=/etc/fess/elastic-certificates.p12
 ```
 
 For other available settings, see [Java Client and Security](https://www.elastic.co/guide/en/x-pack/current/java-clients.html).
 
-### SSL Support
-
-To add SSL transport settings, edit esclient.xml:
+### Copy Certificates
 
 ```
-	<component name="fessEsClient" class="org.codelibs.fess.es.client.FessEsClient">
-		<property name="settings">
-			{"http.cors.enabled":"true",
-			 "http.cors.allow-origin":"*",
-			 "searchguard.ssl.transport.pemkey_filepath":"/path/to/the/key",
-			 "searchguard.ssl.transport.pemcert_filepath":"/path/to/the/CERTIFICATE",
-			 "searchguard.ssl.transport.pemtrustedcas_filepath":"/path/to/the/CA"
-			 }
-		</property>
-```
-
-and enable the following settings in fess.in.[sh|bat] to add SSL truststore for certificate validation:
-
-```
-JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/tech/elastic/config/truststore.jks"
-JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStorePassword=changeit"
+# cp /etc/elasticsearch/elastic-certificates.p12 /etc/fess/elastic-certificates.p12
+# chown fess:fess /etc/fess/elastic-certificates.p12
 ```
 
 ### Start Fess and Elasticsearch
