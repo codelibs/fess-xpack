@@ -41,7 +41,7 @@ public class XPackCurlHelper extends CurlHelper {
             basicAuth = "Basic " + java.util.Base64.getEncoder().encodeToString(value.toString().getBytes(StandardCharsets.UTF_8));
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("basicAuth: " + basicAuth);
+            logger.debug("basicAuth: {}", basicAuth);
         }
     }
 
@@ -49,7 +49,7 @@ public class XPackCurlHelper extends CurlHelper {
     public CurlRequest request(final Method method, final String path) {
         final CurlRequest curlRequest = new CurlRequest(method, ResourceUtil.getElasticsearchHttpUrl() + path);
         if (logger.isDebugEnabled()) {
-            logger.debug(method + " " + ResourceUtil.getElasticsearchHttpUrl() + path + " " + basicAuth);
+            logger.debug("{} {} {}", method, ResourceUtil.getElasticsearchHttpUrl() + path, basicAuth);
         }
         if (basicAuth != null) {
             curlRequest.header("Authorization", basicAuth);
