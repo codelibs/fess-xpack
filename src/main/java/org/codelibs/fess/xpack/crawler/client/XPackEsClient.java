@@ -41,7 +41,7 @@ public class XPackEsClient extends EsClient {
                 .forEach(e -> settingsBuilder.put(e.getKey().toString(), e.getValue().toString()));
         final Settings settings = settingsBuilder.build();
         if (logger.isDebugEnabled()) {
-            logger.debug("Transport settings: " + settings);
+            logger.debug("Transport settings: {}", settings);
         }
         final TransportClient transportClient = new PreBuiltXPackTransportClient(settings);
         Arrays.stream(addresses).forEach(address -> {

@@ -39,8 +39,8 @@ public class XPackUtil {
                     final Path propPath = ResourceUtil.getConfPath("xpack.properties");
                     xpackProperties = new DynamicProperties(propPath);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("<<<" + propPath.toString() + ">>>");
-                        xpackProperties.entrySet().stream().forEach(e -> logger.debug(e.getKey() + "=" + e.getValue()));
+                        logger.debug("<<<{}>>>", propPath.toString());
+                        xpackProperties.entrySet().stream().forEach(e -> logger.debug("{}={}", e.getKey(), e.getValue()));
                     }
                 }
             }
